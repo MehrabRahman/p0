@@ -1,5 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +30,24 @@ public class Scrabble {
 
         if (groups.containsKey(tiles))
             System.out.println(groups.get(tiles));
+
+
+        // Print word of the day from database:
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:scrabble.db");
+            // connection.prepareStatement("CREATE TABLE words (id INT PRIMARY KEY, word VARCHAR)").execute();
+            // connection.prepareStatement("INSERT INTO words (word) VALUES ('act')").execute();
+            ResultSet resultSet = connection.prepareStatement("select * from words").executeQuery();
+            while (resultSet.next()) {
+                System.out.println("Word of the day: " + resultSet.getString("word"));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    private static String alphabetize(String s) {
+    public static String alphabetize(String s) {
         char[] letters = s.toCharArray();
         Arrays.sort(letters);
         return new String(letters);
